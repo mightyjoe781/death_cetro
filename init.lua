@@ -24,7 +24,6 @@ minetest.register_craftitem("death_cetro:cetro", {
         if died then
             local posd = {x = died.x, y = died.y+1, z = died.z}
             user:set_pos(posd)
-            minetest.chat_send_all(died.x .. died.y .. died.z)
             death_cetro[user:get_player_name()] = nil
             itemstack:take_item()
         else
