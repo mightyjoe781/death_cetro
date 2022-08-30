@@ -2,6 +2,7 @@ local death_cetro = {}
 local give_on_death = minetest.settings:get_bool('death_cetro.give_on_death',true)
 
 -- TODO : Add a stack based undo feature upto some limit
+-- TODO : Add mod_storage to store player deaths
 
 --Store (Temporarily) the player's death location
 minetest.register_on_dieplayer(function(player)
@@ -11,8 +12,22 @@ end)
 --Give crystal when player dies (if give_on_death is true)
 minetest.register_on_respawnplayer(function(player)
     if give_on_death and death_cetro[player:get_player_name()]then
-        inv = player:get_inventory()
+        local inv = player:get_inventory()
+        local name = player:get_player_name()
+        if not inv then
+            -- not sure if return works, have to check api
+            -- its a global callback so return have no sense so maybe send a
+            -- sensible message to player
+            minetest.chat_send_player(name,"Could not load your inventory")
+            return
+        end
+        -- check space for adding inventory
+        if not inv:room_for_item("main", {name="death_cetro:cetro", count=1}) then
+            minetest.chat_send_player(name,"Could not add cetro to inventory")
+            return
+        end
         inv:add_item("main","death_cetro:cetro")
+        return true, "Death Cetro given!"
     end
 end)
 
